@@ -8,6 +8,7 @@ import { GetServerSideProps } from "next";
 import styles from './news.module.css';
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import { reportPerformanceMetrics } from "../lib/metrics";
 
 type Article = {
   title: string;
@@ -33,6 +34,16 @@ export default function NewsPage({
   const [nIndex, setNIndex] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    reportPerformanceMetrics();
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        setIsDarkMode(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Check for saved theme preference
@@ -82,7 +93,35 @@ export default function NewsPage({
     <>
       <Head>
         <title>Digital News Web</title>
-        <meta name="description" content="Get the latest tech news from multiple sources" />
+        <meta name="description" content="Berita informatif dan terbaru yang akan menemani harimu" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="Berita Terkini" />
+        <meta property="og:description" content="Berita informatif dan terbaru yang akan menemani harimu" />
+        <meta property="og:type" content="article" />
+        <link rel="canonical" href="https://pwl-digital-news-web.vercel.app/news" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            "headline": "Judul Berita Terbaru",
+            "datePublished": "2025-05-17T09:00:00+07:00",
+            "dateModified": "2025-05-17T10:00:00+07:00",
+            "author": {
+              "@type": "Person",
+              "name": "Admin Portal"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "News Portal",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://pwl-digital-news-web.vercel.app/logo.png"
+              }
+            },
+            "description": "Artikel berita terbaru dan terverifikasi dari News Portal"
+          })
+          }
+        } />
       </Head>
 
       <div className={`${styles.container} ${isDarkMode ? styles.darkMode : ""}`}>
